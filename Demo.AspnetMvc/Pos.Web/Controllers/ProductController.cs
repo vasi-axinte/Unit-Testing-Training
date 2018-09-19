@@ -25,7 +25,8 @@ namespace Pos.Web.Controllers
 
         public IActionResult Details(string barcode)
         {
-            Product p = repository.GetProductByBarcode(barcode);
+            var code = barcode.ToLower().Trim();
+            Product p = repository.GetProductByBarcode(code);
 
             ProductViewModel vm;
             if (p != null)

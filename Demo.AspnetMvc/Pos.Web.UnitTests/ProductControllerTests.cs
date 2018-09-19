@@ -69,7 +69,30 @@ namespace Pos.Web.UnitTests
             IActionResult result = target.Details("some barcode");
 
             ProductViewModel vm = result.GetViewModel<ProductViewModel>();
-            Assert.AreEqual("11.12 $", vm.Price);
+            Assert.AreEqual("11,12 $", vm.Price);
+        }
+
+        [TestMethod]
+        public void Details_BarcodeHasUpperCaseAndSpaces_RepositoryCalledWithLowerCaseAndTrimmed()
+        {
+            Mock<IProductRepository> repositoryMock = new Mock<IProductRepository>();
+            ProductController target = GetTarget(repositoryMock.Object);
+
+            IActionResult result = target.Details(" SoMe bArCoDe  ");
+            
+            repositoryMock.Verify(r => r.GetProductByBarcode("some barcode"));
+        }
+
+        [TestMethod]
+        public void Details_NotFoundProduct_ThrowsNotFoundException()
+        {
+            Mock<IProductRepository> repositoryMock = new Mock<IProductRepository>();
+            ProductController target = GetTarget(repositoryMock.Object);
+
+            IActionResult result = target.Details(" SoMe bArCoDe  ");
+
+            ProductViewModel vm = result.GetViewModel<ProductViewModel>();
+            Assert.AreEqual(vm.Name, "Not Available");
         }
 
         private ProductController GetTargetWithoutProduct()
@@ -82,7 +105,7 @@ namespace Pos.Web.UnitTests
         {
             IProductRepository repository = GetRepositoryStub(testDataProduct);
             ProductController target = GetTarget(repository);
-            ;
+
             return target;
         }
 
