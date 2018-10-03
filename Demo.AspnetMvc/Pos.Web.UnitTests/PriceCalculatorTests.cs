@@ -79,5 +79,32 @@ namespace Pos.Web.UnitTests
 
             Assert.AreEqual(expectedPrice, finalPrice);
         }
+
+        [TestMethod]
+        public void GetPrice_WithDiscount_PriceIsCalculatedCorrectly()
+        {
+            Tax[] taxes = new Tax[] { new Tax { Name = "VAT", Value = 0.19m } };
+            Product testDataProduct = new Product { CatalogCode = "some code", Price = 10, Taxes = taxes, Discount = 0.5m};
+            var price = testDataProduct.Price + testDataProduct.Price * 0.19m;
+            var expectedPrice = price - price * 0.5m;
+
+            PriceCalculator target = new PriceCalculator();
+            var finalPrice = target.GetPrice(testDataProduct);
+
+            Assert.AreEqual(expectedPrice, finalPrice);
+        }
+
+        [TestMethod]
+        public void GetPrice_WithDiscountBiggerThanPrice_PriceIsCalculatedCorrectly()
+        {
+            Tax[] taxes = new Tax[] { new Tax { Name = "VAT", Value = 0.19m } };
+            Product testDataProduct = new Product { CatalogCode = "some code", Price = 10, Taxes = taxes, Discount = 1.5m };
+            var expectedPrice = 0;
+
+            PriceCalculator target = new PriceCalculator();
+            var finalPrice = target.GetPrice(testDataProduct);
+
+            Assert.AreEqual(expectedPrice, finalPrice);
+        }
     }
 }

@@ -14,7 +14,9 @@ namespace Pos.Web.Controllers
                 price += price * productTax.Value;
             }
 
-            return price;
+            price = price - price * product.Discount;
+
+            return price > 0 ? price : 0;
         }
     }
 }
